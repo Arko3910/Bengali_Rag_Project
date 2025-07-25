@@ -1,0 +1,10 @@
+langchain
+langchain-community
+langchain-huggingface
+sentence-transformers
+faiss-cpu
+pymupdf
+python-dotenv
+streamlit
+fastapi
+uvicorn
