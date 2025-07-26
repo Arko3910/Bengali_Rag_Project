@@ -1,58 +1,135 @@
-# Bengali RAG System
 
-This project builds a Retrieval-Augmented Generation (RAG) system that answers questions in Bengali or English based on a provided Bengali PDF.
+# 📘 Bangla-English RAG Chatbot (mT5)
 
-## Components
-- **LLM**: HuggingFace (`FLAN-T5`)
-- **Embedding**: Multilingual MPNet
-- **Vector DB**: FAISS
-- **UI**: Streamlit (demo)
+This project is a Bangla-English Retrieval-Augmented Generation (RAG) system designed to answer questions from uploaded Bangla or English PDF documents using HuggingFace's multilingual models.
 
-## Setup
+---
+
+## 🚀 Features
+
+- 📤 Upload Bangla or English PDFs
+- 🔎 Ask questions in Bangla or English
+- 📚 Uses vector similarity search to retrieve context
+- 🤖 Generates context-aware answers using mT5 LLM
+- 🛡️ Handles fallback and document parsing errors
+- 🌐 Streamlit-powered UI
+
+---
+
+## 🛠️ Setup
+
+### Requirements
+
 ```bash
-pip install streamlit langchain langchain-community langchain-huggingface sentence-transformers pymupdf faiss-cpu
+pip install -r requirements.txt
 ```
-Add your Hugging Face API key in the script or `.env` file.
 
-## Run Streamlit UI
+### Environment Variable
+
+Set your Hugging Face API key in a `.env` file or your system environment:
+
 ```bash
-streamlit run streamlit_app.py
+HUGGINGFACEHUB_API_TOKEN=your_hf_token
 ```
 
-## Example Use Case
-1. Upload a Bengali PDF (e.g., textbook, story)
-2. Ask a question in Bengali or English
-3. Get a response from the model based on document content
+---
 
-## Example Query
+## ▶️ Run the App
+
 ```bash
+streamlit run app.py
+```
+
+---
+
+## 🔍 Sample Bangla Queries
+
+```text
 অনুপমের ভাষায় সুপুরুষ কাকে বলা হয়েছে?
+কাকে অনুপমের ভাগ্য দেবতা বলে উল্লেখ করা হয়েছে?
+বিয়ের সময় কল্যাণীর প্রকৃত বয়স কত ছিল?
 ```
 
-Expected Answer:
-```
-শুম্ভুনাথ
-```
+---
 
-## 📌 Assignment Questions & Answers
+## ✅ Answers to Assignment Questions
 
-### 1. What method or library did you use to extract the text, and why?
-I used `PyMuPDF` to extract text from the Bengali PDF because it supports complex layouts and Unicode text. Formatting issues like page numbers and line breaks were handled with a `clean_text()` function.
+### 1. **What method or library did you use to extract the text, and why?**
 
-### 2. What chunking strategy did you choose?
-I used `RecursiveCharacterTextSplitter` with `chunk_size=1000` and `chunk_overlap=150`. It maintains semantic boundaries while ensuring optimal chunk sizes for embedding.
+We used **PyMuPDFLoader** from `langchain_community.document_loaders`. It provides reliable text extraction from PDFs, including basic Bangla support.  
+Yes, we faced **formatting challenges** like garbled OCR text and missing characters in Bangla. So we added **cleaning filters** to normalize punctuation and remove noise.
 
-### 3. What embedding model did you use?
-I used `sentence-transformers/paraphrase-multilingual-mpnet-base-v2`, which supports both Bengali and English and captures sentence-level semantics effectively.
+---
 
-### 4. How are you comparing the query with your stored chunks?
-Using FAISS with cosine similarity between query embeddings and document chunk vectors. FAISS enables fast and scalable retrieval.
+### 2. **What chunking strategy did you choose? Why?**
 
-### 5. How do you ensure that the question and the document chunks are compared meaningfully?
-By using high-quality multilingual embeddings, semantic chunking, and retrieving the top 3 most similar chunks. If the query is vague, the result may be generic or off-topic.
+We used `RecursiveCharacterTextSplitter` with:
+- `chunk_size = 1000`
+- `chunk_overlap = 200`
+- Custom separators (`["\n\n", "\n", "।", ".", "!", "?", " "]`)
 
-### 6. Do the results seem relevant? If not, what might improve them?
-Yes, results are mostly relevant. Improvements could include finer chunking, better embedding models, more contextual documents, or domain-specific tuning.
+This hybrid strategy is ideal for **semantic retrieval** in multilingual documents. Overlap preserves context and avoids semantic breaks.
 
-## License
-This project is for educational and research use. Please ensure uploaded PDFs are legally usable.
+---
+
+### 3. **What embedding model did you use? Why?**
+
+We used `sentence-transformers/paraphrase-multilingual-mpnet-base-v2`.  
+It supports **Bangla + English**, is efficient, and works well with FAISS for dense retrieval. It captures contextual and semantic meaning across languages.
+
+---
+
+### 4. **How are you comparing the query with your stored chunks?**
+
+We use **FAISS** for approximate nearest neighbor search based on cosine similarity.  
+This method is fast, scalable, and works well with high-dimensional embeddings.
+
+---
+
+### 5. **How do you ensure meaningful comparison between query and documents?**
+
+- We detect language (Bangla/English) and adjust prompts accordingly.
+- We clean and validate document chunks before vectorization.
+- mT5 is used for Bangla-aware answering.
+- If results are vague, we apply **fallback sentence matching** from source text.
+
+If the query is vague, we default to showing **most relevant chunks** or fallback to **first coherent sentences**.
+
+---
+
+### 6. **Do the results seem relevant? What could improve them?**
+
+Yes, results are mostly relevant for structured or clear PDFs.  
+Improvements could include:
+- Advanced OCR (e.g. `pytesseract`) for scanned PDFs
+- Improved chunk filtering logic
+- Use of `ragas` or `bertopic` for evaluation
+- Integrating larger multilingual LLMs (e.g., `mistralai/Mixtral`)
+
+---
+
+## 📎 Tools & Stack
+
+| Component      | Tool/Library                                 |
+|----------------|----------------------------------------------|
+| LLM            | `google/mt5-base` (via HuggingFace)          |
+| Embeddings     | `sentence-transformers/paraphrase-mpnet`     |
+| Vector DB      | FAISS                                        |
+| Interface      | Streamlit                                    |
+| Chunking       | LangChain's RecursiveCharacterTextSplitter   |
+| Extraction     | LangChain's PyMuPDFLoader                    |
+
+---
+
+## 🧪 Evaluation
+
+Evaluation was done manually using sample Bangla questions.  
+Groundedness and relevance were verified through source text comparison.
+
+---
+
+## 📫 Contact
+
+For feedback: **asifuzzamanarko@gmail.com**
+
+---
